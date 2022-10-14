@@ -1,0 +1,27 @@
+#Set Server port
+server:
+  port: 8082
+  #Set context path
+  servlet:
+    context-path: /kafka-consumer-app
+
+# Set application name
+spring:
+  application:
+    name: kafka-consumer-app
+
+  #Set Embedded Mongo version and fetaures
+  mongodb:
+    embedded:
+      version: 4.0.2
+      features: ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER, NO_HTTP_INTERFACE_ARG, ONLY_64BIT
+
+  # Set Database name and port
+  data:
+    mongodb:
+      database: kafka-consumer-app
+      port: 56682
+
+  # Add Kafka Configuration
+  kafka:
+    bootstrap-servers: 'localhost:9092'

@@ -1,0 +1,35 @@
+#Set Swagger related Open API3 properties
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html
+
+# Set Server port
+server:
+  port: 8080
+  #Set context path
+  servlet:
+    context-path: /kafka-producer-app
+
+#Set application name
+spring:
+  application:
+    name: kafka-producer-app
+  # Set Embedded Mongo version and features
+  mongodb:
+    embedded:
+      version: 4.0.2
+      features: ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER, NO_HTTP_INTERFACE_ARG, ONLY_64BIT
+  # Set Database name and port
+  data:
+    mongodb:
+      database: kafka-producer-app
+      port: 56680
+
+  # Add Kafka configuration
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+    partition-count: 3
+    replica-count: 1
+
