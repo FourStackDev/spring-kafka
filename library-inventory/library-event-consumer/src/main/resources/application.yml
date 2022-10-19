@@ -1,0 +1,30 @@
+#Set Server Port
+server:
+  port: 8082
+  #Set context path
+  servlet:
+    context-path: /library-event-consumer
+
+# Set application name
+spring:
+  application:
+    name: library-event-consumer
+
+  # Set Embedded Mongo version and features
+  mongodb:
+    embedded:
+      version: 4.0.2
+      features:
+        - ONLY_WITH_SSL
+        - ONLY_WINDOWS_2008_SERVER
+        - NO_HTTP_INTERFACE_ARG
+        - ONLY_64_BIT
+  # Set Database name and port
+  data:
+    mongodb:
+      database: library-event-consumer
+      port: 56684
+
+  # Add Kafka Configuration
+  kafka:
+    bootstrap-servers: 'localhost:9092'
