@@ -2,7 +2,9 @@ package org.fourstack.springkafkaconsumer.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fourstack.springkafkaconsumer.dao.EmployeeRepository;
+import org.fourstack.springkafkaconsumer.dao.StudentRepository;
 import org.fourstack.springkafkaconsumer.model.Employee;
+import org.fourstack.springkafkaconsumer.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,9 @@ public class KafkaMessageConsumerService {
 
     @Autowired
     private EmployeeRepository empRepository;
+
+    @Autowired
+    private StudentRepository stdRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -38,6 +43,20 @@ public class KafkaMessageConsumerService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    @KafkaListener(
+            topics = "${kafka.topics.student-list-topic}",
+            groupId = "${kafka.groups.student-data}",
+            containerFactory = "studentListenerFactory"
+    )
+    public void consumeStudentData(Student student) {
+        System.out.println(student);
+
+        try {
+            stdRepository.save(student);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

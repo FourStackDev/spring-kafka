@@ -34,6 +34,8 @@ kafka:
   topics:
     flink-data-topic: flink-data-topic
     emp-list-topic: emp-list-topic
+    student-list-topic: student-list-topic
   groups:
     flink-data-group: flink-data-group
     employee-data: employee-data
+    student-data: student-data

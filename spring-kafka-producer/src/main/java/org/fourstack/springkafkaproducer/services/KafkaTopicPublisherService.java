@@ -1,7 +1,9 @@
 package org.fourstack.springkafkaproducer.services;
 
 import org.fourstack.springkafkaproducer.dao.EmployeeRepository;
+import org.fourstack.springkafkaproducer.dao.StudentRepository;
 import org.fourstack.springkafkaproducer.model.Employee;
+import org.fourstack.springkafkaproducer.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -17,6 +19,9 @@ public class KafkaTopicPublisherService {
     @Autowired
     private EmployeeRepository empRepository;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
     public String publishMessageToTopic(String topic, String key, Object data) {
         kafkaTemplate.send(topic, key, data);
         return "Message Published";
@@ -26,4 +31,7 @@ public class KafkaTopicPublisherService {
         return empRepository.save(employee);
     }
 
+    public Student saveStudent(Student student) {
+        return studentRepository.save(student);
+    }
 }

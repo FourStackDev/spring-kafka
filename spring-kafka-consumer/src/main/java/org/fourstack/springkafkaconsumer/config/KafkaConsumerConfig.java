@@ -3,6 +3,7 @@ package org.fourstack.springkafkaconsumer.config;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.fourstack.springkafkaconsumer.model.Employee;
+import org.fourstack.springkafkaconsumer.model.Student;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,10 +61,7 @@ public class KafkaConsumerConfig {
         deserializer.setRemoveTypeHeaders(false);
         deserializer.setUseTypeMapperForKey(true);
 
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
+        Map<String, Object> props = getPropertyMap(deserializer);
 
         return new DefaultKafkaConsumerFactory<>(
                 props,
@@ -80,6 +78,41 @@ public class KafkaConsumerConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(empConsumerFactory);
         return  factory;
+    }
+
+    private Map<String, Object> getPropertyMap(JsonDeserializer deserializer) {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
+        return props;
+    }
+
+
+    // Create ConsumerFactory for Student Data
+    @Bean
+    public ConsumerFactory<String, Student> studentConsumerFactory() {
+        JsonDeserializer<Student> deserializer = new JsonDeserializer<>(Student.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
+
+        Map<String, Object> props = getPropertyMap(deserializer);
+
+        return new DefaultKafkaConsumerFactory<>(
+                props,
+                new StringDeserializer(),
+                deserializer
+        );
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Student>>
+    studentListenerFactory(ConsumerFactory<String, Student> studentConsumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Student> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(studentConsumerFactory);
+        return factory;
     }
 
 
