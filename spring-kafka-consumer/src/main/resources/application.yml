@@ -25,3 +25,11 @@ spring:
   # Add Kafka Configuration
   kafka:
     bootstrap-servers: 'localhost:9092'
+
+kafka:
+  topics:
+    flink-data-topic: flink-data-topic
+    emp-list-topic: emp-list-topic
+  groups:
+    flink-data-group: flink-data-group
+    employee-data: employee-data

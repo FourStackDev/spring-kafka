@@ -18,16 +18,16 @@ public class KafkaMessageConsumerService {
     private ObjectMapper objectMapper;
 
     @KafkaListener(
-            topics = "flink-data-topic",
-            groupId = "flink-data-group"
+            topics = "${kafka.topics.flink-data-topic}",
+            groupId = "${kafka.groups.flink-data-group}"
     )
     public void consumeDataFromTopic(String data) {
         System.out.println("Received Data: "+data);
     }
 
     @KafkaListener(
-            topics = "emp-list-topic",
-            groupId = "employee-data"
+            topics = "${kafka.topics.emp-list-topic}",
+            groupId = "${kafka.groups.employee-data}"
     )
     public void consumeEmployeeData(String empData) {
         System.out.println(empData);
