@@ -27,16 +27,17 @@ public class KafkaMessageConsumerService {
 
     @KafkaListener(
             topics = "${kafka.topics.emp-list-topic}",
-            groupId = "${kafka.groups.employee-data}"
+            groupId = "${kafka.groups.employee-data}",
+            containerFactory = "empListenerFactory"
     )
-    public void consumeEmployeeData(String empData) {
-        System.out.println(empData);
+    public void consumeEmployeeData(Employee employee) {
+        System.out.println(employee);
 
         try {
-            Employee employee = objectMapper.readValue(empData, Employee.class);
+            //Employee employee = objectMapper.readValue(empData, Employee.class);
             empRepository.save(employee);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
     }

@@ -36,15 +36,21 @@ public class EmployeeController {
 
         try {
             // publish the message to Kafka
-            topicPublisherService.publishMessageToTopic(
+            /*topicPublisherService.publishMessageToTopic(
                     "emp-list-topic",
                     employee.getId(),
                     objectMapper.writeValueAsString(employee)
+            );*/
+
+            topicPublisherService.publishMessageToTopic(
+                    "emp-list-topic",
+                    employee.getId(),
+                    employee
             );
 
             topicPublisherService.saveEmployee(employee);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return employee;
     }

@@ -32,4 +32,9 @@ spring:
     bootstrap-servers: 'localhost:9092'
     partition-count: 3
     replica-count: 1
+    producer:
+      properties:
+        # Add not to include Type(class Type info) data in header while serializing.
+        spring.json.add.type.headers: false
+
 

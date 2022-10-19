@@ -9,13 +9,17 @@ import lombok.NoArgsConstructor;
 import org.fourstack.springkafkaproducer.codetype.Department;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Document(collection = "employee")
-public class Employee {
+public class Employee implements Serializable {
+
+    private static final long serialVersionUID = -5980879186261647199L;
 
     private String id;
     private String name;

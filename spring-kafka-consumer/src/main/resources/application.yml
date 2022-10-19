@@ -25,6 +25,10 @@ spring:
   # Add Kafka Configuration
   kafka:
     bootstrap-servers: 'localhost:9092'
+    consumer:
+      properties:
+        # Add Trusted packages to consume the all type of Model data
+        spring.json.trusted.packages: '*'
 
 kafka:
   topics:
