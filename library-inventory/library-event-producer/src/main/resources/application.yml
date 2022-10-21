@@ -5,11 +5,24 @@ server:
   servlet:
     context-path: /library-event-producer
 
+#Set Swagger properties
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html
+
 # Set application name
 spring:
   application:
     name: library-event-producer
+  #Set active profile
+  profiles:
+    active: local
 
+---
+spring:
+  profiles: local
   # Set Embedded Mongo version and features
   mongodb:
     embedded:
@@ -24,5 +37,31 @@ spring:
 
   # Add Kafka Configurations
   kafka:
-    bootstrap-servers:
-      - 'localhost:9092'
+    bootstrap-servers: 'localhost:9092,localhost:9094'
+
+---
+spring:
+  profiles: dev
+
+  # Add MongoDB Configurations
+  data:
+    mongodb:
+      database: library-event-producer
+      port: 56688
+
+  # Add Kafka Configurations
+  kafka:
+    bootstrap-servers: 'localhost:9092, localhost:9094'
+
+---
+spring:
+  profiles: prod
+
+  data:
+    mongodb:
+      database: library-event-producer
+      port: 56688
+
+  # Add Kafka Configurations
+  kafka:
+    bootstrap-servers: 'localhost:9092, localhost:9094'
