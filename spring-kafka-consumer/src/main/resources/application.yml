@@ -24,12 +24,13 @@ spring:
 
   # Add Kafka Configuration
   kafka:
-    bootstrap-servers: 'localhost:9092'
+    bootstrap-servers: 'localhost:9092', 'localhost:9094', 'localhost:9096'
     consumer:
       properties:
         # Add Trusted packages to consume the all type of Model data
         spring.json.trusted.packages: '*'
 
+# Properties to hold topic and group names
 kafka:
   topics:
     flink-data-topic: flink-data-topic
