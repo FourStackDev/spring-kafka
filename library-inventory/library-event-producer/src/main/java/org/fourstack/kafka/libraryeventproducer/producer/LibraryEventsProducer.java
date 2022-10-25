@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.fourstack.kafka.libraryeventproducer.codetype.LibraryEventType;
 import org.fourstack.kafka.libraryeventproducer.domain.LibraryEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,6 +22,8 @@ import java.util.List;
 @Slf4j
 public class LibraryEventsProducer {
 
+    private static int id = 0;
+
     @Autowired
     private KafkaTemplate<Integer, String> kafkaTemplate;
 
@@ -30,6 +33,9 @@ public class LibraryEventsProducer {
 
     public void publishLibraryEvent(LibraryEvent event) {
         try {
+            if (event.getLibraryEventType() == LibraryEventType.NEW )
+                event.setLibraryEventId(++id);
+
             Integer key = event.getLibraryEventId();
             String value = objectMapper.writeValueAsString(event);
 
@@ -81,6 +87,9 @@ public class LibraryEventsProducer {
 
     public void publishLibraryEvent_Approach2(String topic, LibraryEvent event) {
         try {
+            if (event.getLibraryEventType() == LibraryEventType.NEW )
+                event.setLibraryEventId(++id);
+
             Integer key = event.getLibraryEventId();
             String value = objectMapper.writeValueAsString(event);
 

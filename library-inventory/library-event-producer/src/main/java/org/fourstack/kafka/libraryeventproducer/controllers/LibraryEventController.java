@@ -1,5 +1,6 @@
 package org.fourstack.kafka.libraryeventproducer.controllers;
 
+import org.fourstack.kafka.libraryeventproducer.codetype.LibraryEventType;
 import org.fourstack.kafka.libraryeventproducer.domain.LibraryEvent;
 import org.fourstack.kafka.libraryeventproducer.producer.LibraryEventsProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class LibraryEventController {
 
     @PostMapping("/library-event")
     public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody LibraryEvent event) {
-        System.out.println(event);
+        event.setLibraryEventType(LibraryEventType.NEW);
         eventsProducer.publishLibraryEvent(event);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -28,7 +29,7 @@ public class LibraryEventController {
 
     @PostMapping("/library-event/approach2")
     public ResponseEntity<LibraryEvent> postLibraryEventApproach2(@RequestBody LibraryEvent event) {
-        System.out.println(event);
+        event.setLibraryEventType(LibraryEventType.NEW);
         eventsProducer.publishLibraryEvent_Approach2("library-events", event);
 
         return ResponseEntity.status(HttpStatus.CREATED)
