@@ -63,6 +63,26 @@ public class LibraryEventControllerTest {
         ).andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
+    @Test
+    public void testPostLibraryEventApproach2() throws Exception {
+        // Create the pojo objects
+        Book book = getBook();
+        LibraryEvent event = getLibraryEvent(book, null);
+        String url = "/api/v1/library-event/approach2";
+
+        // Mock the void method.
+        Mockito.doNothing()
+                .when(eventsProducer)
+                .publishLibraryEvent_Approach2(Mockito.anyString(), Mockito.any(LibraryEvent.class));
+
+        String content = objectMapper.writeValueAsString(event);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
     private LibraryEvent getLibraryEvent(Book book, LibraryEventType eventType) {
         return LibraryEvent.builder()
                 .libraryEventId(null)

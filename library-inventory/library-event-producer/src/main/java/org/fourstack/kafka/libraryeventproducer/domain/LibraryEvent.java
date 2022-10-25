@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.fourstack.kafka.libraryeventproducer.codetype.LibraryEventType;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +22,8 @@ public class LibraryEvent {
 
     private Integer libraryEventId;
     private LibraryEventType libraryEventType;
+
+    @NotNull
+    @Valid
     private Book book;
 }
