@@ -110,6 +110,43 @@ public class LibraryEventControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("book - must not be null"));
     }
 
+    @Test
+    public void testUpdateLibraryEvent() throws Exception {
+        Book book = getBook();
+        LibraryEvent event = getLibraryEvent(book, null);
+        event.setLibraryEventId(1);
+
+        String content = objectMapper.writeValueAsString(event);
+        SettableListenableFuture future = new SettableListenableFuture<>();
+        future.set(event);
+        Mockito.when(eventsProducer.publishLibraryEvent_Approach2(Mockito.anyString(), Mockito.any(LibraryEvent.class)))
+                .thenReturn(future);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/api/v1/library-event")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+
+
+    }
+
+    @Test
+    @DisplayName("TestCase: updateLibraryEvent - 400 Bad Request")
+    public void testUpdateLibraryEvent_4xx() throws Exception {
+        Book book = getBook();
+        LibraryEvent event = getLibraryEvent(book, null);
+
+        String content = objectMapper.writeValueAsString(event);
+        mockMvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/library-event")
+                                .content(content)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.content().string("LibraryEventId is Required."));
+
+    }
+
     private LibraryEvent getLibraryEvent(Book book, LibraryEventType eventType) {
         return LibraryEvent.builder()
                 .libraryEventId(null)

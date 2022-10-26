@@ -121,6 +121,61 @@ public class LibraryEventControllerIntgTest {
         assertNotNull(consumerRecord.value());
     }
 
+    @Test
+    public void testUpdateLibraryEvent() {
+        String url = "/api/v1/library-event";
+        Book book = getBook();
+        LibraryEvent event = getLibraryEvent(book, null);
+        event.setLibraryEventId(1);
+
+        //Create HttpEntity with headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<LibraryEvent> request = new HttpEntity<>(event, headers);
+
+        // Send update request using exchange() method
+        ResponseEntity<LibraryEvent> response = restTemplate.exchange(
+                url,
+                HttpMethod.PUT,
+                request,
+                LibraryEvent.class
+        );
+
+        assert response != null;
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        //Consume the Record using KafkaTestUtils
+        ConsumerRecord<Integer, String> consumerRecord = KafkaTestUtils.getSingleRecord(consumer, "library-events");
+        assert consumerRecord != null;
+        assertNotNull(consumerRecord.key());
+        assertNotNull(consumerRecord.value());
+        assertEquals("{\"libraryEventId\":1,\"libraryEventType\":\"UPDATE\"," +
+                "\"book\":{\"bookId\":2341,\"name\":\"Spring Boot with Kafka\",\"author\":\"Manjunath\"}}", consumerRecord.value());
+    }
+
+    @Test
+    public void testUpdateLibraryEvent_400BAD_REQUEST() {
+        String url = "/api/v1/library-event";
+        Book book = getBook();
+        LibraryEvent event = getLibraryEvent(book, null);
+
+        //Create HttpEntity with headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<LibraryEvent> request = new HttpEntity<>(event, headers);
+
+        // Send update request using exchange() method
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.PUT,
+                request,
+                String.class
+        );
+
+        assert response != null;
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
     private LibraryEvent getLibraryEvent(Book book, LibraryEventType eventType) {
         return LibraryEvent.builder()
                 .libraryEventId(null)
