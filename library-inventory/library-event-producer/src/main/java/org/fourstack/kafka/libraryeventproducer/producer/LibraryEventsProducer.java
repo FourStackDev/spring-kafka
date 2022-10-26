@@ -87,7 +87,7 @@ public class LibraryEventsProducer {
             ListenableFuture<SendResult<Integer, String>> resultFuture = kafkaTemplate.send(producerRecord);
             resultFuture.addCallback(
                     success -> {
-                        log.info("Successfully published the message to the Topic >> {}, key >> {}, value >> {}, partition",
+                        log.info("Successfully published the message to the Topic >> {}, key >> {}, value >> {}, partition >> ",
                         topic, key, value, success.getRecordMetadata().partition());
                     },
                     failure -> {

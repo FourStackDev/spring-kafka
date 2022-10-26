@@ -1,7 +1,10 @@
 package org.fourstack.kafka.libraryeventproducer.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.fourstack.kafka.libraryeventproducer.codetype.LibraryEventType;
 import org.fourstack.kafka.libraryeventproducer.domain.Book;
 import org.fourstack.kafka.libraryeventproducer.domain.LibraryEvent;
@@ -19,6 +22,8 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SettableListenableFuture;
 
+import java.util.concurrent.ExecutionException;
+
 @ExtendWith(MockitoExtension.class)
 public class LibraryEventsProducerTest {
 
@@ -32,7 +37,7 @@ public class LibraryEventsProducerTest {
     private LibraryEventsProducer eventsProducer;
 
     @Test
-    public void test_publishLibraryEvent_Approach2() {
+    public void test_publishLibraryEvent_Approach2_onFailure() {
         Book book = getBook();
         LibraryEvent event = getLibraryEvent(book, LibraryEventType.NEW);
 
@@ -44,6 +49,39 @@ public class LibraryEventsProducerTest {
 
         Assertions.assertThrows(Exception.class,
                 () -> eventsProducer.publishLibraryEvent_Approach2("library-events", event).get());
+    }
+
+    @Test
+    public void test_publishLibraryEvent_Approach2_onSuccess() throws JsonProcessingException, ExecutionException, InterruptedException {
+        Book book = getBook();
+        LibraryEvent event = getLibraryEvent(book, LibraryEventType.NEW);
+
+        //Build ProducerRecord, RecordMetaData and SendResult
+        String value = objectMapper.writeValueAsString(event);
+        String topic = "library-event";
+        ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(
+                topic,
+                event.getLibraryEventId(),
+                value
+        );
+        RecordMetadata recordMetadata = new RecordMetadata(
+                new TopicPartition(topic, 3),
+                1, 1, System.currentTimeMillis(), 234, 123
+        );
+        SendResult<Integer, String> sendResult = new SendResult<>(producerRecord, recordMetadata);
+
+        // Create a ListenableFuture Instance.
+        SettableListenableFuture future = new SettableListenableFuture<>();
+        future.set(sendResult);
+
+        Mockito.when(kafkaTemplate.send(Mockito.any(ProducerRecord.class)))
+                .thenReturn(future);
+
+        ListenableFuture<SendResult<Integer, String>> future1 = eventsProducer.publishLibraryEvent_Approach2(topic, event);
+        SendResult<Integer, String> sendResult1 = future1.get();
+
+        Assertions.assertEquals(3, sendResult1.getRecordMetadata().partition());
+
     }
 
     private LibraryEvent getLibraryEvent(Book book, LibraryEventType eventType) {
