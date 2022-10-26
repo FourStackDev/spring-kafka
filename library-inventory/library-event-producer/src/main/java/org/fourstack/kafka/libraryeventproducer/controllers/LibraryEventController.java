@@ -22,7 +22,7 @@ public class LibraryEventController {
     private LibraryEventsProducer eventsProducer;
 
     @PostMapping("/library-event")
-    public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody @Validated LibraryEvent event) {
+    public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody @Valid LibraryEvent event) {
         event.setLibraryEventType(LibraryEventType.NEW);
         eventsProducer.publishLibraryEvent(event);
 
@@ -31,7 +31,7 @@ public class LibraryEventController {
     }
 
     @PostMapping("/library-event/approach2")
-    public ResponseEntity<LibraryEvent> postLibraryEventApproach2(@RequestBody @Validated LibraryEvent event) {
+    public ResponseEntity<LibraryEvent> postLibraryEventApproach2(@RequestBody @Valid LibraryEvent event) {
         event.setLibraryEventType(LibraryEventType.NEW);
         eventsProducer.publishLibraryEvent_Approach2("library-events", event);
 

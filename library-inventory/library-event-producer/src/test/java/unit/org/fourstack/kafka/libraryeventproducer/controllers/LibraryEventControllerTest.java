@@ -8,6 +8,7 @@ import org.fourstack.kafka.libraryeventproducer.domain.LibraryEvent;
 import org.fourstack.kafka.libraryeventproducer.producer.LibraryEventsProducer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -81,6 +82,21 @@ public class LibraryEventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
         ).andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    @DisplayName("TestCase: PostLibraryEventApproach2 - 400 Bad Request")
+    public void testPostLibraryEventApproach2_4xx() throws Exception {
+        LibraryEvent event = getLibraryEvent(null, null);
+        String apiEndpoint = "/api/v1/library-event/approach2";
+
+        String content = objectMapper.writeValueAsString(event);
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post(apiEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content)
+                ).andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.content().string("book - must not be null"));
     }
 
     private LibraryEvent getLibraryEvent(Book book, LibraryEventType eventType) {
