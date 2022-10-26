@@ -17,9 +17,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.SettableListenableFuture;
 
 @WebMvcTest(LibraryEventController.class)
 @AutoConfigureMockMvc
@@ -51,10 +54,13 @@ public class LibraryEventControllerTest {
 
         String endPoint = "/api/v1/library-event";
 
-        // Mock the void method.
+       /*
         Mockito.doNothing()
                 .when(eventsProducer)
-                .publishLibraryEvent(Mockito.any(LibraryEvent.class));
+                .publishLibraryEvent(Mockito.any(LibraryEvent.class));*/
+        SettableListenableFuture<SendResult<Integer, String>> future = new SettableListenableFuture<>();
+        Mockito.when(eventsProducer.publishLibraryEvent(Mockito.any(LibraryEvent.class)))
+                .thenReturn(future);
 
         String content = objectMapper.writeValueAsString(event);
         mockMvc.perform(
@@ -72,9 +78,14 @@ public class LibraryEventControllerTest {
         String url = "/api/v1/library-event/approach2";
 
         // Mock the void method.
-        Mockito.doNothing()
+        /*Mockito.doNothing()
                 .when(eventsProducer)
                 .publishLibraryEvent_Approach2(Mockito.anyString(), Mockito.any(LibraryEvent.class));
+*/
+        SettableListenableFuture<SendResult<Integer, String>> future = new SettableListenableFuture<>();
+
+        Mockito.when(eventsProducer.publishLibraryEvent_Approach2(Mockito.anyString(), Mockito.any(LibraryEvent.class)))
+                .thenReturn(future);
 
         String content = objectMapper.writeValueAsString(event);
         mockMvc.perform(

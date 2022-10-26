@@ -1,6 +1,5 @@
 package org.fourstack.kafka.libraryeventproducer.producer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -31,7 +30,7 @@ public class LibraryEventsProducer {
     private ObjectMapper objectMapper;
 
 
-    public void publishLibraryEvent(LibraryEvent event) {
+    public ListenableFuture<SendResult<Integer, String>> publishLibraryEvent(LibraryEvent event) {
         try {
             if (event.getLibraryEventType() == LibraryEventType.NEW )
                 event.setLibraryEventId(++id);
@@ -52,23 +51,12 @@ public class LibraryEventsProducer {
                 }
             });
 
-
-           /* resultFuture.addCallback(
-                    successResult -> {
-                        log.info("Successfully published the message : key >> {}, value >> {}, partition >> {}",
-                                key, value, successResult.getRecordMetadata().partition());
-                    }, failure -> {
-                        log.error("Exception occurred while publishing message - {}", failure.getMessage());
-                        throw new RuntimeException(failure.getMessage());
-                    }
-            );
-*/
-
+            return resultFuture;
         } catch (Exception e) {
             log.error("Exception occurred while publishing the LibraryEvent with eventId - {}",
                     event.getLibraryEventId(), e);
+            throw new RuntimeException(e);
         }
-
     }
 
     private void handleFailure(Integer key, String value, Throwable ex) {
@@ -85,7 +73,7 @@ public class LibraryEventsProducer {
                 key, value, result.getRecordMetadata().partition());
     }
 
-    public void publishLibraryEvent_Approach2(String topic, LibraryEvent event) {
+    public ListenableFuture<SendResult<Integer, String>> publishLibraryEvent_Approach2(String topic, LibraryEvent event) {
         try {
             if (event.getLibraryEventType() == LibraryEventType.NEW )
                 event.setLibraryEventId(++id);
@@ -104,11 +92,14 @@ public class LibraryEventsProducer {
                     },
                     failure -> {
                         log.error("Exception occurred while publishing the message - {}", failure.getMessage());
-                        throw new RuntimeException(failure);
+                        throw new RuntimeException(failure.getMessage());
                     }
             );
+
+            return resultFuture;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception caught : {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
