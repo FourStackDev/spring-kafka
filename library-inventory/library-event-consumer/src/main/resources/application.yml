@@ -10,6 +10,10 @@ spring:
   application:
     name: library-event-consumer
 
+  #Set active profile
+  profiles:
+    active: local
+
   # Set Embedded Mongo version and features
   mongodb:
     embedded:
@@ -25,6 +29,41 @@ spring:
       database: library-event-consumer
       port: 56684
 
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
   # Add Kafka Configuration
   kafka:
     bootstrap-servers: 'localhost:9092'
+    topic:
+      library-events: library-events
+    consumer:
+      group:
+        library-events-consumer-grp: library-events-consumer-group
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  # Add Kafka Configuration
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # Add Kafka Configuration
+  kafka:
+    bootstrap-servers: 'localhost:9094'
