@@ -41,6 +41,8 @@ spring:
     bootstrap-servers: 'localhost:9092'
     topic:
       library-events: library-events
+      retry: library-events.retry
+      dlt: library-events.DLT
     consumer:
       group:
         library-events-consumer-grp: library-events-consumer-group
