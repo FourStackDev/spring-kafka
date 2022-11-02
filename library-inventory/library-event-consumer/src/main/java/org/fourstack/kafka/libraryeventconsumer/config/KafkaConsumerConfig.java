@@ -2,12 +2,16 @@ package org.fourstack.kafka.libraryeventconsumer.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.fourstack.kafka.libraryeventconsumer.constants.EventsConsumerConstants;
+import org.fourstack.kafka.libraryeventconsumer.service.FailureRecordService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +20,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ConsumerRecordRecoverer;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.util.backoff.FixedBackOff;
@@ -23,6 +28,9 @@ import org.springframework.util.backoff.FixedBackOff;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.fourstack.kafka.libraryeventconsumer.constants.EventsConsumerConstants.DEAD;
+import static org.fourstack.kafka.libraryeventconsumer.constants.EventsConsumerConstants.RETRY;
 
 @Configuration
 @Slf4j
@@ -36,6 +44,9 @@ public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.topic.dlt}")
     private String deadLetterTopic;
+
+    @Autowired
+    private FailureRecordService failureRecordService;
 
     /*
      * KafkaTemplate Bean is created for the purpose of Recovery logic,
@@ -65,6 +76,15 @@ public class KafkaConsumerConfig {
                 });
         return recoverer;
     }
+
+    ConsumerRecordRecoverer consumerRecordRecoverer = (consumerRecord, exception) -> {
+        var record  =(ConsumerRecord<Integer, String>) consumerRecord;
+      if (exception.getCause() instanceof RecoverableDataAccessException) {
+          failureRecordService.saveFailedRecord(record, exception, RETRY);
+      } else {
+          failureRecordService.saveFailedRecord(record, exception, DEAD);
+      }
+    };
 
     /**
      * ErrorHandler to handle the errors of Kafka Consumer.
