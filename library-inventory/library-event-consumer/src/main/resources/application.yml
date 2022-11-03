@@ -69,3 +69,15 @@ spring:
   # Add Kafka Configuration
   kafka:
     bootstrap-servers: 'localhost:9094'
+    ssl:
+      trust-store-location: file:D:\softwares\kafka_2.12-3.2.3\ssl\client.trustore.jks
+      trust-store-password: KafkaSSL
+      key-store-location: file:D:\softwares\kafka_2.12-3.2.3\ssl\client.keystore.jks
+      key-store-password: KafkaSSL
+    properties:
+      acks: all
+      retries: 10
+      retry.backoff.ms: 1000
+      security:
+        protocol: SSL
+      ssl.endpoint.identification.algorithm:
